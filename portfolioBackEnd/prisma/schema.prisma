@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model tecnologias {
+  id     Int     @id @default(autoincrement())
+  nome   String  @unique @db.VarChar(100)
+  imagem String? @db.VarChar(2048)
+}
+
+model projetos {
+  id        Int       @id @default(autoincrement())
+  nome      String    @db.VarChar(150)
+  descricao String?   @db.Text
+  criado_em DateTime? @default(now()) @db.Timestamp(0)
+}
+
+model projeto_tecnologias {
+  projeto_id    Int
+  tecnologia_id Int
+
+  @@id([projeto_id, tecnologia_id])
+}
+
+enum projeto_midias_tipo {
+  imagem
+  video
+}
+
+model projeto_midias {
+  id         Int                 @id @default(autoincrement())
+  projeto_id Int
+  tipo       projeto_midias_tipo
+  url        String              @db.VarChar(2048)
+  ordem      Int?                @default(0)
+  criado_em  DateTime?           @default(now()) @db.Timestamp(0)
+}
+
+model user {
+  id        Int       @id @default(autoincrement())
+  nome      String    @db.VarChar(100)
+  idade     Int?
+  email     String    @unique @db.VarChar(150)
+  telefone  String?   @db.VarChar(20)
+  curriculo String?   @db.VarChar(2048)
+  imageUrl  String?   @db.VarChar(2048)
+  descricao String?   @db.Text
+  criado_em DateTime? @default(now()) @db.Timestamp(0)
+}

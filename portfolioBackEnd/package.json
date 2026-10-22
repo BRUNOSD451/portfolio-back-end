@@ -1,0 +1,34 @@
+{
+  "name": "portfolio-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API do portfolio com Express, Prisma e MySQL",
+  "type": "module",
+  "scripts": {
+    "start": "node --use-system-ca src/server.js",
+    "dev": "node --use-system-ca --watch src/server.js",
+    "prisma:generate": "node --use-system-ca node_modules/prisma/build/index.js generate",
+    "postinstall": "npm run prisma:generate",
+    "admin:setup": "node scripts/admin-setup.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "cloudinary": "^2.11.0",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.5",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.1",
+    "ffprobe-static": "^3.1.0",
+    "file-type": "^22.1.1",
+    "multer": "^2.4.0",
+    "sharp": "^0.35.5",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "prisma": "^6.19.3"
+  }
+}
