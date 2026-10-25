@@ -1,0 +1,29 @@
+# Blueprint do Render: New > Blueprint e selecione este repositório.
+# Valores com sync: false são pedidos na criação (Environment no painel).
+services:
+  - type: web
+    name: portfolio-api
+    runtime: node
+    plan: free
+    region: virginia
+    # O Prisma CLI é devDependency e o postinstall gera o cliente.
+    buildCommand: npm ci --include=dev
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Um proxy do Render à frente: usa o IP real do visitante nos limites.
+      - key: TRUSTED_PROXY
+        value: "1"
+      # mysql://USUARIO:SENHA@HOST:4000/portfolio?sslaccept=strict
+      - key: DATABASE_URL
+        sync: false
+      # https://SEU-SITE.vercel.app (separe várias origens por vírgula)
+      - key: CORS_ORIGINS
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false

@@ -8,7 +8,7 @@ const app = createApp({
   prisma,
   uploadImage,
   uploadMedia,
-  resumeStorage: createResumeStorage(),
+  resumeStorage: createResumeStorage(prisma),
 });
 const server = app.listen(env.port, async () => {
   console.log(`Servidor disponível em http://localhost:${env.port}`);

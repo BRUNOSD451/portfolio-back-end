@@ -125,7 +125,7 @@ export function createUploadHandler(store) {
         .json({ message: "Há uploads em andamento. Aguarde." });
     const maximum = (kind === "media" ? 50 : 5) * MB;
     const multipart = Boolean(req.is("multipart/form-data"));
-    if (multipart && !store.reserveUpload(maximum, 500 * MB))
+    if (multipart && !(await store.reserveUpload(maximum, 500 * MB)))
       return res
         .status(429)
         .json({ message: "Cota diária de upload atingida (500 MB)." });
@@ -160,7 +160,7 @@ export function createUploadHandler(store) {
         await (kind === "pdf"
           ? validateDocument(req.file)
           : validateMedia(req.file, kind === "media"));
-      if (multipart) store.refundUpload(maximum - receivedBytes);
+      if (multipart) await store.refundUpload(maximum - receivedBytes);
       await handler(req, res);
     } catch (error) {
       if (error instanceof multer.MulterError) {

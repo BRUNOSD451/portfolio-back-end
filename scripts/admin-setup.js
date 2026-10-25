@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { createInterface } from "node:readline/promises";
 import { Writable } from "node:stream";
+import { prisma } from "../src/integrations/prisma.js";
 import { openSecurityStore } from "../src/security/store.js";
 import { adminCredentials } from "../src/security/validation.js";
 
@@ -16,7 +17,7 @@ const output = new Writable({
   },
 });
 const input = createInterface({ input: process.stdin, output, terminal: true });
-const store = openSecurityStore();
+const store = openSecurityStore(prisma);
 try {
   console.log(
     "Configurar administrador. Isso também revoga as sessões anteriores.",
@@ -43,5 +44,5 @@ try {
   process.exitCode = 1;
 } finally {
   input.close();
-  store.close();
+  await prisma.$disconnect();
 }

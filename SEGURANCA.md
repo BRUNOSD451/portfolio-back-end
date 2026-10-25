@@ -14,7 +14,7 @@ Depois, inicie/reinicie as APIs Node e Python e abra o app Expo. Entre com a con
 
 ## Armazenamento e sessão
 
-Os dados públicos continuam no MySQL/Prisma. A conta administrativa, os hashes das sessões e a cota de uploads ficam no SQLite privado `portfolioBackEnd/data/security.sqlite3`, fora do Git. Isso evita alterar as tabelas existentes do portfólio. `AUTH_DATABASE_PATH` permite escolher outro caminho. Em hospedagem, mantenha esse arquivo em volume persistente e restrinja o acesso ao usuário do processo.
+Tudo fica no MySQL/Prisma, para sobreviver aos reinícios de hospedagens com disco temporário: a conta administrativa (`admin_conta`), os hashes das sessões (`admin_sessoes`), a cota de uploads (`upload_cota`) e o PDF do currículo (`curriculo_arquivo`). Crie as tabelas com `npm run db:push`. Dados de uma instalação anterior em `data/security.sqlite3` e `data/uploads/curriculo.pdf` são copiados por `npm run migrate:cloud`.
 
 A senha usa scrypt com salt aleatório (N=32768, r=8, p=3). As sessões são tokens aleatórios de 256 bits; o servidor armazena apenas SHA-256 desses tokens. Expiram em oito horas, com até cinco sessões simultâneas. Logout revoga a sessão no servidor. Redefinir a conta invalida todas.
 
@@ -36,7 +36,7 @@ O app guarda a sessão no SecureStore no Android/iOS. Na web, mantém apenas em 
 | Login | 5 tentativas/15 minutos/IP, no máximo 2 verificações de senha simultâneas |
 | Gravações | 60 requisições/minuto/IP |
 | Upload | 20 tentativas/hora/IP, no máximo 2 uploads simultâneos por processo |
-| Cota de arquivos | 500 MB/dia UTC, persistidos no SQLite |
+| Cota de arquivos | 500 MB/dia UTC, persistidos no MySQL |
 | Imagem | 5 MB, 20 megapixels, 8192 pixels por lado |
 | Vídeo | 50 MB, 120 segundos, área máxima de 4096 × 2160 pixels e até 4096 pixels por lado |
 | JSON Node | 64 KB |

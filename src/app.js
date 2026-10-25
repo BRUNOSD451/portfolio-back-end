@@ -14,15 +14,19 @@ import { createUploadHandler } from "./security/media.js";
 // As integrações entram por parâmetro para separar a API das conexões externas.
 export function createApp(dependencies) {
   const app = express();
-  const store = dependencies.securityStore || openSecurityStore();
+  const store = dependencies.securityStore || openSecurityStore(dependencies.prisma);
   app.locals.securityStore = store;
   const security = { upload: createUploadHandler(store) };
   app.disable("x-powered-by");
   // Só confie no proxy conhecido; por padrão X-Forwarded-For é ignorado.
-  if (process.env.TRUSTED_PROXY)
+  // Um número indica quantos proxies existem à frente (ex.: 1 no Render).
+  const trustedProxy = process.env.TRUSTED_PROXY?.trim();
+  if (trustedProxy)
     app.set(
       "trust proxy",
-      process.env.TRUSTED_PROXY.split(",").map((v) => v.trim()),
+      /^\d+$/.test(trustedProxy)
+        ? Number(trustedProxy)
+        : trustedProxy.split(",").map((v) => v.trim()),
     );
   const origins =
     process.env.CORS_ORIGINS?.split(",")
@@ -63,7 +67,7 @@ export function createApp(dependencies) {
   // Proteção central: novas rotas de escrita também exigem administrador.
   app.use(["/user", "/technologies", "/projects"], (req, res, next) => {
     if (["GET", "HEAD", "OPTIONS"].includes(req.method)) return next();
-    authenticate(req, res, () =>
+    return authenticate(req, res, () =>
       writes(req, res, () =>
         req.is("multipart/form-data") ? uploads(req, res, next) : next(),
       ),

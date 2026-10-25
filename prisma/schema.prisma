@@ -52,3 +52,32 @@ model user {
   descricao String?   @db.Text
   criado_em DateTime? @default(now()) @db.Timestamp(0)
 }
+
+// Conta administrativa, sessões e cota de upload. Ficam no MySQL para
+// sobreviver aos reinícios de hospedagens com disco temporário.
+model admin_conta {
+  id    Int    @id
+  email String @db.VarChar(150)
+  salt  String @db.Char(32)
+  hash  String @db.Char(128)
+}
+
+model admin_sessoes {
+  digest    String @id @db.Char(64)
+  expira_em BigInt
+  criado_em BigInt
+
+  @@index([criado_em])
+}
+
+model upload_cota {
+  dia   String @id @db.Char(10)
+  bytes BigInt
+}
+
+// PDF do currículo do proprietário (único registro, id 1).
+model curriculo_arquivo {
+  id            Int      @id
+  conteudo      Bytes    @db.MediumBlob
+  atualizado_em DateTime @default(now()) @updatedAt @db.Timestamp(0)
+}

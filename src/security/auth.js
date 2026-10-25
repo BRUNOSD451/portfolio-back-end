@@ -5,9 +5,9 @@ import { credentials, parse } from "./validation.js";
 export const bearerToken = (req) =>
   /^Bearer ([A-Za-z0-9_-]{43})$/.exec(req.headers.authorization || "")?.[1];
 export function requireAdmin(store) {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     const token = bearerToken(req);
-    const session = store.session(token);
+    const session = await store.session(token);
     if (!session)
       return res
         .status(401)
@@ -52,8 +52,8 @@ export function createAuthRouter(store) {
   router.get("/session", requireAdmin(store), (req, res) =>
     res.json(res.locals.session),
   );
-  router.post("/logout", requireAdmin(store), (req, res) => {
-    store.revoke(bearerToken(req));
+  router.post("/logout", requireAdmin(store), async (req, res) => {
+    await store.revoke(bearerToken(req));
     res.status(204).end();
   });
   return router;

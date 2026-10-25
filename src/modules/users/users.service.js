@@ -68,7 +68,7 @@ export function createUsersService({ prisma, uploadImage, resumeStorage }) {
       if (!user) return null;
       return {
         nome: user.nome,
-        file: (await resumeStorage.exists()) ? resumeStorage.path : null,
+        file: await resumeStorage.read(),
         link: user.curriculo,
       };
     },

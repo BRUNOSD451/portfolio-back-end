@@ -8,8 +8,10 @@
     "start": "node --use-system-ca src/server.js",
     "dev": "node --use-system-ca --watch src/server.js",
     "prisma:generate": "node --use-system-ca node_modules/prisma/build/index.js generate",
+    "db:push": "node --use-system-ca node_modules/prisma/build/index.js db push",
     "postinstall": "npm run prisma:generate",
     "admin:setup": "node scripts/admin-setup.js",
+    "migrate:cloud": "node --use-system-ca scripts/migrate-to-cloud.js",
     "test": "node --test"
   },
   "engines": {

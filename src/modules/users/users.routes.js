@@ -44,15 +44,15 @@ export function createUsersRouter(service, security) {
         .replace(/\p{Diacritic}/gu, "")
         .replace(/[^A-Za-z0-9]+/g, "-")
         .replace(/^-|-$/g, "");
-      return res.sendFile(resume.file, {
-        headers: {
+      return res
+        .set({
           "Content-Type": "application/pdf",
           "Content-Disposition": `${disposition}; filename="Curriculo${name ? `-${name}` : ""}.pdf"`,
-          // Mesmo endereço para versões novas: o navegador revalida a cada acesso.
+          // Mesmo endereço para versões novas: o navegador revalida pelo ETag.
           "Cache-Control": "no-cache",
           "X-Content-Type-Options": "nosniff",
-        },
-      });
+        })
+        .send(resume.file);
     }
     // Compatibilidade com um link externo cadastrado antes do upload local.
     if (resume?.link && /^https?:\/\//i.test(resume.link))
