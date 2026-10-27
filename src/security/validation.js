@@ -87,3 +87,10 @@ export function parse(schema, value) {
     );
   return result.data;
 }
+export const messageInput = z
+  .object({
+    conteudo: text(10000).min(1),
+    // Identificador da conversa no agente, para agrupar as mensagens.
+    sessao: text(100).min(1).nullable().default(null),
+  })
+  .strict();

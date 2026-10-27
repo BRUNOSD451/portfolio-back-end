@@ -6,6 +6,8 @@ import { createTechnologiesRouter } from "./modules/technologies/technologies.ro
 import { createTechnologiesService } from "./modules/technologies/technologies.service.js";
 import { createProjectsRouter } from "./modules/projects/projects.routes.js";
 import { createProjectsService } from "./modules/projects/projects.service.js";
+import { createMessagesRouter } from "./modules/messages/messages.routes.js";
+import { createMessagesService } from "./modules/messages/messages.service.js";
 import { notFound, errorHandler } from "./middlewares/errors.js";
 import { openSecurityStore } from "./security/store.js";
 import { createAuthRouter, requireAdmin, limiter } from "./security/auth.js";
@@ -55,7 +57,7 @@ export function createApp(dependencies) {
     cors({
       origin: allowOrigin,
       methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization"],
+      allowedHeaders: ["Content-Type", "Authorization", "X-Api-Key"],
     }),
   );
   app.use(limiter(180));
@@ -84,6 +86,16 @@ export function createApp(dependencies) {
   app.use(
     "/projects",
     createProjectsRouter(createProjectsService(dependencies), security),
+  );
+  // Escrita pelo servidor do agente (X-Api-Key); leitura só pelo administrador.
+  // Todas as mensagens vêm do IP do agente, que aceita até 120 chats/minuto.
+  app.use(
+    "/messages",
+    limiter(120),
+    createMessagesRouter(createMessagesService(dependencies), {
+      authenticate,
+      apiKey: process.env.MESSAGES_API_KEY?.trim(),
+    }),
   );
   // Erros e rotas desconhecidas são tratados depois de todos os módulos.
   app.use(notFound);

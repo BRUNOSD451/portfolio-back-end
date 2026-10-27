@@ -27,3 +27,6 @@ services:
         sync: false
       - key: CLOUDINARY_API_SECRET
         sync: false
+      # Chave compartilhada com o servidor do agente de IA (X-Api-Key).
+      - key: MESSAGES_API_KEY
+        sync: false

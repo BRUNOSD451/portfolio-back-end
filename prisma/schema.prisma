@@ -81,3 +81,14 @@ model curriculo_arquivo {
   conteudo      Bytes    @db.MediumBlob
   atualizado_em DateTime @default(now()) @updatedAt @db.Timestamp(0)
 }
+
+// Mensagens que recrutadores enviam ao agente de IA (gravadas pelo servidor do agente).
+model messages {
+  id        Int      @id @default(autoincrement())
+  sessao    String?  @db.VarChar(100)
+  conteudo  String   @db.Text
+  criado_em DateTime @default(now()) @db.Timestamp(0)
+
+  @@index([sessao])
+  @@index([criado_em])
+}
