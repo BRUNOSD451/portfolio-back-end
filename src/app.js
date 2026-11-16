@@ -60,6 +60,9 @@ export function createApp(dependencies) {
       allowedHeaders: ["Content-Type", "Authorization", "X-Api-Key"],
     }),
   );
+  // Ping de monitoramento (UptimeRobot etc.) para manter o Render acordado.
+  // Fica antes do limiter e não consulta o banco.
+  app.get("/health", (req, res) => res.json({ status: "ok" }));
   app.use(limiter(180));
   app.use(express.json({ limit: "64kb" }));
   app.use("/auth", createAuthRouter(store));
